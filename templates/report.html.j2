@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Eval Report - {{ run.agent_name }}</title>
+  <style>
+    body { font-family: system-ui; max-width: 1000px; margin: 40px auto; }
+    .header { background: #0f172a; color: white; padding: 24px; border-radius: 8px; }
+    .big-num { font-size: 48px; font-weight: 700; }
+    .pass { color: #10b981; }
+    .fail { color: #ef4444; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    th { background: #0f172a; color: white; padding: 8px; text-align: left; }
+    td { padding: 8px; border-bottom: 1px solid #e2e8f0; }
+    .regression-box { background: #fef2f2; border-left: 4px solid #ef4444; padding: 12px; }
+    .improvement-box { background: #f0fdf4; border-left: 4px solid #10b981; padding: 12px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>{{ run.agent_name }} - Eval Report</h1>
+    <p>Run ID: {{ run.run_id }} &middot; {{ run.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+    <div class="big-num">{{ '%.0f'|format(summary.pass_rate * 100) }}%</div>
+    <p>{{ summary.passed }}/{{ summary.total }} scenarios passed</p>
+  </div>
+
+  <h2>Score Distribution</h2>
+  <pre>
+{% for label in bucket_labels %}{{ label }}: {{ '■' * buckets[loop.index0] }} ({{ buckets[loop.index0] }})
+{% endfor %}</pre>
+
+  {% if regression and regression.regressions %}
+  <div class="regression-box">
+    <h2>⚠ Regressions ({{ regression.regressions|length }})</h2>
+    <ul>{% for r in regression.regressions %}<li>{{ r }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  {% if regression and regression.improvements %}
+  <div class="improvement-box">
+    <h2>✓ Improvements ({{ regression.improvements|length }})</h2>
+    <ul>{% for i in regression.improvements %}<li>{{ i }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  <h2>Full Results</h2>
+  <table>
+    <tr><th>Scenario</th><th>Score</th><th>Pass</th><th>Tools Called</th><th>Rationale</th></tr>
+    {% for r in run.results %}
+    <tr>
+      <td>{{ r.scenario_id }}</td>
+      <td>{{ '%.2f'|format(r.judge_score) }}</td>
+      <td>{% if r.passed %}<span class="pass">PASS</span>{% else %}<span class="fail">FAIL</span>{% endif %}</td>
+      <td>{{ r.tools_called|join(', ') or 'none' }}</td>
+      <td>{{ r.judge_rationale[:120] }}...</td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

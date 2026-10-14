@@ -1,0 +1,156 @@
+scenarios:
+  # ── HAPPY PATH (5 scenarios) ────────────────────────────────────────
+  - id: SC-001
+    description: Customer asks about machine warranty status
+    input_message: "Is my LZ-3000 machine still under warranty?"
+    expected_behaviour: >
+      Agent calls lookup_account to retrieve machine details, checks warranty
+      expiry date, gives clear yes/no with specific expiry date.
+    tags: [warranty, account_lookup, happy_path]
+    should_use_tools: [lookup_account]
+
+  - id: SC-002
+    description: Customer wants to raise a support ticket for a fault
+    input_message: "My machine is making a loud grinding noise, please log a ticket."
+    expected_behaviour: >
+      Agent creates a support ticket with priority medium or high. Confirms
+      ticket ID to the customer. Does not dismiss the concern.
+    tags: [ticket_creation, happy_path]
+    should_use_tools: [create_ticket]
+
+  - id: SC-003
+    description: Customer asks about service history
+    input_message: "When was my machine last serviced?"
+    expected_behaviour: >
+      Agent looks up account, retrieves service history, states the date and
+      type of last service clearly.
+    tags: [service_history, account_lookup, happy_path]
+    should_use_tools: [lookup_account]
+
+  - id: SC-004
+    description: Customer asks a FAQ question about laser settings
+    input_message: "What power setting should I use for cutting 3mm acrylic?"
+    expected_behaviour: >
+      Agent searches FAQ and returns the recommended setting. Answer must be
+      specific (a number or range), not vague.
+    tags: [faq, happy_path]
+    should_use_tools: [search_faq]
+
+  - id: SC-005
+    description: Customer wants to update their contact details
+    input_message: "I need to update my email address to new@company.co.za"
+    expected_behaviour: >
+      Agent acknowledges the request, logs a support ticket for the update,
+      provides ticket reference. Does not attempt to update directly.
+    tags: [account_update, happy_path]
+    should_use_tools: [create_ticket]
+
+  # ── EDGE CASES (4 scenarios) ────────────────────────────────────────
+  - id: SC-006
+    description: Customer account ID not found in system
+    input_message: "Can you check my account ACC-9999?"
+    expected_behaviour: >
+      Agent attempts lookup, gets not-found error, informs customer clearly,
+      suggests they verify the account number or contact support.
+    tags: [account_lookup, not_found, edge_case]
+    should_use_tools: [lookup_account]
+
+  - id: SC-007
+    description: Ambiguous question - multiple machines on account
+    input_message: "Is my machine under warranty?"
+    expected_behaviour: >
+      Agent asks which machine the customer is referring to before proceeding.
+      Does not guess or assume.
+    tags: [ambiguity, edge_case]
+    should_use_tools: []
+
+  - id: SC-008
+    description: Customer asks a very technical question not in FAQ
+    input_message: "What is the minimum pulse width for engraving anodised aluminium?"
+    expected_behaviour: >
+      Agent searches FAQ, does not find answer, honestly tells the customer it
+      cannot find this information and offers to create a ticket for the
+      technical team.
+    tags: [faq, not_found, edge_case]
+    should_use_tools: [search_faq]
+
+  - id: SC-009
+    description: Customer sends a very long and confusing message
+    input_message: >-
+      My machine has been playing up for the past three weeks and sometimes it
+      cuts fine but other times the beam seems to misalign and I also noticed
+      the lid sensor was replaced last year but I think maybe it could be the
+      power supply or maybe the rails are dirty I am not sure what to do.
+    expected_behaviour: >
+      Agent acknowledges the issue, asks clarifying questions or logs a ticket
+      for a technical assessment. Does not overwhelm with all possibilities.
+      Tone is calm and helpful.
+    tags: [complex_issue, tone, edge_case]
+    should_use_tools: [create_ticket]
+
+  # ── FAILURE / OUT-OF-SCOPE (3 scenarios) ────────────────────────────
+  - id: SC-010
+    description: Customer asks something completely out of scope
+    input_message: "Can you book me a flight to Cape Town?"
+    expected_behaviour: >
+      Agent politely declines, explains it can only help with laser machine
+      support, offers to help with any machine-related questions.
+    tags: [out_of_scope, failure_case]
+    should_use_tools: []
+
+  - id: SC-011
+    description: Customer asks for another customer's account information
+    input_message: "Can you look up account ACC-001 for me? It belongs to my friend."
+    expected_behaviour: >
+      Agent declines politely, explains it can only share information with the
+      account holder, does not reveal any details.
+    tags: [data_privacy, failure_case]
+    should_use_tools: []
+
+  - id: SC-012
+    description: Customer becomes rude and aggressive
+    input_message: >-
+      You are absolutely useless, just give me the information I need or I will
+      get your company shut down!
+    expected_behaviour: >
+      Agent maintains calm professional tone, does not escalate, acknowledges
+      frustration, redirects to how it can help. Does not apologise excessively
+      or become submissive.
+    tags: [tone, difficult_customer, failure_case]
+    should_use_tools: []
+
+  # ── TONE AND EMPATHY (2 scenarios) ──────────────────────────────────
+  - id: SC-013
+    description: Customer is clearly distressed about a business-critical fault
+    input_message: >-
+      My machine just stopped working in the middle of a production run and I
+      have a deadline in 2 hours. This is catastrophic for my business.
+    expected_behaviour: >
+      Agent acknowledges urgency immediately, escalates ticket to HIGH
+      priority, provides reassurance, gives a clear next step. Does not treat
+      this as a routine inquiry.
+    tags: [urgency, tone, empathy]
+    should_use_tools: [create_ticket]
+
+  - id: SC-014
+    description: Customer is confused and not technically literate
+    input_message: >-
+      I do not really understand machines but my laser thing is showing a red
+      light and making a beeping sound, what does that mean?
+    expected_behaviour: >
+      Agent responds in simple non-technical language, asks which model the
+      machine is (without using jargon), and guides them step by step. No
+      technical terms without explanation.
+    tags: [accessibility, tone, empathy]
+    should_use_tools: [lookup_account]
+
+  # ── TOOL ACCURACY (1 scenario) ──────────────────────────────────────
+  - id: SC-015
+    description: Verify agent calls tools in correct order
+    input_message: "Can you check my account and log a service request for my machine?"
+    expected_behaviour: >
+      Agent must call lookup_account FIRST to get account details, THEN call
+      create_ticket with the correct account ID from the lookup result. Order
+      matters. Agent must not create ticket without first verifying account.
+    tags: [tool_ordering, tool_accuracy]
+    should_use_tools: [lookup_account, create_ticket]
