@@ -4,11 +4,11 @@ os.environ.setdefault("OPENAI_API_KEY", "fake-key")
 os.environ.setdefault("JUDGE_MODEL", "gpt-4o")
 os.environ.setdefault("PASS_THRESHOLD", "0.7")
 
-from datetime import datetime, timezone  # noqa: E402
+from datetime import UTC, datetime
 
-import pytest  # noqa: E402
+import pytest
 
-from evalbench.models import EvalRun, Scenario, ScenarioResult  # noqa: E402
+from evalbench.models import EvalRun, Scenario, ScenarioResult
 
 
 @pytest.fixture
@@ -51,6 +51,6 @@ def sample_run():
         run_id="r1",
         agent_name="test",
         scenario_set="test",
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         results=results,
     )

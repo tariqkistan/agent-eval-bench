@@ -29,7 +29,7 @@ def eval(
     """Run an eval against a LangChain agent using a scenario YAML file."""
     # NOTE: in real use, import your own agent here.
     # The CLI demo builds the mock support agent for illustration.
-    from scripts.demo import build_demo_agent
+    from scripts.demo import build_demo_agent  # type: ignore[import-not-found]
 
     agent = build_demo_agent()
     scenarios = load_scenarios(scenarios_file)

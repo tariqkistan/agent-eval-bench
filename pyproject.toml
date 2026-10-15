@@ -24,6 +24,7 @@ dev = [
     "pytest-cov",
     "ruff",
     "mypy",
+    "types-PyYAML",
 ]
 
 [project.scripts]
@@ -36,3 +37,12 @@ where = ["src"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "scripts.*"
+ignore_errors = true
+follow_imports = "skip"

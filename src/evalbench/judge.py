@@ -7,7 +7,7 @@ from evalbench.models import Scenario
 
 client = AsyncOpenAI(api_key=os.environ["OPENAI_API_KEY"])
 MODEL = os.environ.get("JUDGE_MODEL", "gpt-4o")
-THRESHOLD = float(os.environ.get("PASS_THRESHOLD", 0.7))
+THRESHOLD = float(os.environ.get("PASS_THRESHOLD", "0.7"))
 
 SYSTEM_PROMPT = """
 You are evaluating an AI agent response.
@@ -55,7 +55,7 @@ AGENT RESPONSE:
         max_tokens=400,
     )
 
-    raw = json.loads(response.choices[0].message.content)
+    raw = json.loads(response.choices[0].message.content or "{}")
     score = float(raw.get("score", 0.0))
     rationale = raw.get("rationale", "No rationale provided")
     passed = score >= THRESHOLD

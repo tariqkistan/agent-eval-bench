@@ -1,7 +1,7 @@
 import asyncio
 import time
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from evalbench.judge import judge_response
 from evalbench.models import EvalRun, EvalSummary, Scenario, ScenarioResult
@@ -18,7 +18,7 @@ async def _run_one(agent, scenario: Scenario, run_id: str) -> ScenarioResult:
         # Extract tool names from intermediate steps
         steps = result.get("intermediate_steps", [])
         tools_called = [step[0].tool for step in steps if hasattr(step[0], "tool")]
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         response = f"ERROR: {e}"
         tools_called = []
 
@@ -55,7 +55,7 @@ async def run_eval(
         run_id=run_id,
         agent_name=agent_name,
         scenario_set=scenario_set,
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         results=list(results),
     )
     summary = _compute_summary(run, scenarios)
