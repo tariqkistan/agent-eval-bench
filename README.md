@@ -1,4 +1,11 @@
-# agent-eval-bench
+# Agent Eval-bench
+
+[![CI](https://github.com/tariqkistan/agent-eval-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/tariqkistan/agent-eval-bench/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.11-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+<a href="https://github.com/tariqkistan?tab=repositories"><img src="https://img.shields.io/badge/VIEW MY WORK-b4ff39?style=for-the-badge&logo=github&logoColor=white&labelColor=555555" alt="VIEW MY OTHER REPOS"></a>
+
 
 **Test · Compare · Improve**
 
@@ -7,10 +14,6 @@ LangChain/LangGraph agent, scores each answer with an LLM judge, checks tool usa
 diffs two runs so a prompt change shows up as "3 scenarios regressed, 1 improved" instead of a vibe.
 
 Output: JSON run files and a single shareable HTML report. Exit codes make it a CI gate.
-
-[![CI](https://github.com/tariqkistan/agent-eval-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/tariqkistan/agent-eval-bench/actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/python-3.11-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
 
 ![agent-eval-bench architecture](docs/architecture-guide.jpg)
 
